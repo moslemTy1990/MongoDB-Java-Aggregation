@@ -16,7 +16,7 @@ public class MariaClass {
             JOptionPane.showMessageDialog(null, "Error" + e);
             return null;
         }
-    }
+    }  // method to check the connection of MariaDB
 
     public void InsertDataIntoRelationalDB(String String1,String String2) throws Exception  {
         try {

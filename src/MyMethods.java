@@ -39,7 +39,7 @@ public  class MyMethods {
     public void FilterTemp() {
 
 
-            long StartPeriod = Long.parseLong("1571842449859");    //selecting a period 
+            long StartPeriod = Long.parseLong("1571842449859");    //selecting a period
             long FinishTime = Long.parseLong("1571842519709");
 
         MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(2));
@@ -97,7 +97,7 @@ public  class MyMethods {
 
       //  }
 
-    }
+    }   // this is the method to store to database
 
     public List<String> getDatabaseNames() {
         MongoCursor<String> dbsCursor = mongoClient.listDatabaseNames().iterator();
