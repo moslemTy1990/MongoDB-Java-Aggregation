@@ -30,7 +30,7 @@ public  class MyMethods {
     public void CheckConnection() {
         getDatabaseNames();
         System.out.println("The name of the data base: " + dbs.get(0));
-    }
+    }   // checking the mongoConnection
 
     public void getCollection() {
         System.out.println("the name of the collections of the data base: " + dbs.get(0) + "is" + getColectionNames());
