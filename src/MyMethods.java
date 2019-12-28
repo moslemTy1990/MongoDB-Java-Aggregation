@@ -34,7 +34,7 @@ public  class MyMethods {
 
     public void getCollection() {
         System.out.println("the name of the collections of the data base: " + dbs.get(0) + "is" + getColectionNames());
-    }
+    }      // geting the collection on a list
 
     public void FilterTemp() {
 
