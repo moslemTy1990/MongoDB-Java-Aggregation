@@ -12,6 +12,7 @@ import org.bson.conversions.Bson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.StreamSupport;
 
 import org.bson.Document;
@@ -40,17 +41,19 @@ public  class MyMethods {
 
 
             long StartPeriod = Long.parseLong("1571842449859");    //selecting a period
-            long FinishTime = Long.parseLong("1571842519709");
+          //  long FinishTime = Long.parseLong("1571842519709");
 
         MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(2));
         Bson filterID = Filters.eq("id", "144-12") ;   //Filtering a specific manufacturure
         Bson TimeFilter= gte("lastTimestamp",StartPeriod);  // Filtering a period
         Bson filterType = Filters.type("signals", "array");     // Consider the array Signals
-        Bson filterTypeXpr = expr(Document.parse("{ $gt: [ { $size: '$signals' }, 0 ] }")); // If signal has ni value avoid it.
+        Bson filterTypeXpr =  Filters.elemMatch("signals", Filters.eq("signal",
+                "InterfaceType.InjectionUnits.InjectionUnit_1.TemperatureZones.TemperatureZone_1.ActualTemperature"));
+       // Bson filterTypeXpr = expr(Document.parse("{ $gt: [ { $size: '$signals' }, 0 ] }")); // If signal has ni value avoid it.
 
         List<Document> list = new ArrayList<>();   // in this part i apply the filter 
         coll.find(and(TimeFilter,filterID,filterType, filterTypeXpr))
-                .limit(5)
+                .limit(50)
                 .iterator()
                 .forEachRemaining(list::add);
 
@@ -65,29 +68,16 @@ public  class MyMethods {
             System.out.println(Document);
         }
 
-/*
-       Bson Myfilter=Filters.and(
-                            Filters.eq("id", "144-12"),
-                                  Filters.gte("lastTimestamp",StartPeriod ),
-                                  Filters.elemMatch("signals",Filters.ne("value","0.0")),
-                                  Filters.elemMatch("signals",Filters.ne("value","0")),
-                                 Filters.elemMatch("signals",Filters.eq("signal",
-                                                "InterfaceType.Jobs.ActiveJob.NumCavities"))
-                     );
 
-        FindIterable<Document>  doc=coll.find(Myfilter).limit(1);
-        for (Document Document : doc) {
-            System.out.println(Document);
-        }
-*/    // My previous code
                 /*
         TOD try to avoing result with empty signal and try to do a filter with specific signal
         the get the values of the signal with start time and stop time
         */   //ToDo
+
     }
 
-    public void SaveToMariaDB(String val , String sig) {
-      //  if(sig.equals("InterfaceType.InjectionUnits.InjectionUnit_1.TemperatureZones.TemperatureZone_2.NominalTemperature")) {
+    private void SaveToMariaDB(String val , String sig) {
+        if(sig.equals("InterfaceType.InjectionUnits.InjectionUnit_1.TemperatureZones.TemperatureZone_1.ActualTemperature")) {
             System.out.println(val + " " + sig );
             try{
                 MariaDB.InsertDataIntoRelationalDB(sig, val);
@@ -95,18 +85,18 @@ public  class MyMethods {
                 System.out.println(e);
             }
 
-      //  }
+      }
 
     }   // this is the method to store to database
 
-    public List<String> getDatabaseNames() {
+    private List<String> getDatabaseNames() {
         MongoCursor<String> dbsCursor = mongoClient.listDatabaseNames().iterator();
         while (dbsCursor.hasNext()) {
             dbs.add(dbsCursor.next());
         }
         return dbs;
     }
-    public List<String> getColectionNames() {
+    private List<String> getColectionNames() {
         MongoCursor<String> Mycollections = mongoClient.getDatabase(dbs.get(0)).listCollectionNames().iterator();
         while (Mycollections.hasNext()) {
             dbc.add(Mycollections.next());
