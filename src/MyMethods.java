@@ -29,9 +29,9 @@ public  class MyMethods {
     }
 
     public void FilterTemp() {
-
-          long startTime = Long.parseLong("1571842449859");    //selecting a period
-          long finishTime = Long.parseLong("1574438049859");
+        List<Document> resultList = new ArrayList<>();
+        long startTime = Long.parseLong("1571842449859");    //selecting a period
+        long finishTime = Long.parseLong("1574438049859");
 
          createBucketTimePeriod(startTime,finishTime);  //fill up the time period bucket
 
@@ -42,15 +42,16 @@ public  class MyMethods {
         Bson filterType = Filters.type("signals", "array");     // Consider the array Signals
         Bson filterTypeXpr =  Filters.elemMatch("signals", Filters.eq("signal",
                 "InterfaceType.InjectionUnits.InjectionUnit_1.TemperatureZones.TemperatureZone_1.ActualTemperature"));
-                    // Filtering a specific signal of the array
-        List<Document> list = new ArrayList<>();   // in this part i apply the filter 
-        coll.find(and(startTimeFilter,endTimeFilter,filterID,filterType, filterTypeXpr))
-                  // .limit(50)//Todo remove this limit , bucket data hour by hour , put into maria db each record representing each hour
-                 // store avg, store standard deviation, each in a record
-                .iterator()
-                .forEachRemaining(list::add);
+        // Filtering a specific signal of the array
 
-        for ( Document doc1: list) {        // in this part i get the value and the signal content and store in the maria db through a method
+        // in this part i apply the filter
+        coll.find(and(startTimeFilter,endTimeFilter,filterID,filterType, filterTypeXpr))
+            // .limit(50)//Todo remove this limit , bucket data hour by hour , put into maria db each record representing each hour
+            // store avg, store standard deviation, each in a record
+              .iterator()
+              .forEachRemaining(resultList::add);
+
+        for ( Document doc1: resultList) {        // in this part i get the value and the signal content and store in the maria db through a method
             List<Document> arr = (List<Document>) doc1.get("signals");
             arr.forEach(e -> SaveToMariaDB(e.get("value").toString(),e.get("signal").toString()));
         }

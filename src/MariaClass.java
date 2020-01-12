@@ -17,14 +17,15 @@ public class MariaClass {
             return null;
         }
     }  // method to check the connection of MariaDB
-
+    Connection conn=   CheckMariaConnection();
     public void InsertDataIntoRelationalDB(String String1,String String2) throws Exception  {
         try {
-         Connection conn=   CheckMariaConnection();
+
             PreparedStatement doInsert = conn.prepareStatement("INSERT INTO exporteddata (Signal1,Val) " +
                                             "VALUES ('" + String1 + "','" + String2 + "') ");
             doInsert.executeUpdate();
             System.out.println("Insert Completed");
+
         } catch (Exception e){
             System.out.println(e);
         }
