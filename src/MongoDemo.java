@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 public class MongoDemo {
 
     public static void main(String[] args) {
@@ -6,8 +10,6 @@ public class MongoDemo {
         Myconnection.CheckConnection();    // Checking if the connection works or not
        Myconnection.getCollection();   // Printing the Collection Names
        Myconnection.FilterTemp();  //Printing and showing an example in Filters
-
-
-
     }
+
 }
