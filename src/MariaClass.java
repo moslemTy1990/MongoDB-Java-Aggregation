@@ -21,8 +21,8 @@ public class MariaClass {
     public void InsertDataIntoRelationalDB(String timeStamp,String id,String signal,Double avg,Double std,Double Max,Double Min) throws Exception  {
         try {
 
-            PreparedStatement doInsert = conn.prepareStatement("INSERT INTO exporteddata (Signal1,Val) " +
-                                            "VALUES ('" + timeStamp + "','" + id + "') ");
+            PreparedStatement doInsert = conn.prepareStatement("INSERT INTO exporteddata (timeStamp,id,average,std,max,min) " +
+                                            "VALUES ('" + timeStamp + "','" + id + "'," + avg + "," + std +"," + Max+"," + Min +") ");
             doInsert.executeUpdate();
           //  System.out.println("Insert Completed");
 

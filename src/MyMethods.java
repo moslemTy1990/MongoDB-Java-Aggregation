@@ -109,7 +109,7 @@ public  class MyMethods {
                                                     (Double)f.get("STD"),
                                                     (Double) f.get("Max"),
                                                     (Double) f.get("Min")
-                                                    ));
+                                                 ));
     }
 
     /*
@@ -125,7 +125,7 @@ public  class MyMethods {
             }
          }
 
-
+    /*Converting the Milisec time to the date time and returning the value as string*/
     private String ConvertTimeStamp(Long timeStamp){
         Calendar timeStmp = Calendar.getInstance();
         timeStmp.setTimeInMillis(timeStamp);
