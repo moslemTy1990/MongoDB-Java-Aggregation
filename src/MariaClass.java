@@ -18,13 +18,13 @@ public class MariaClass {
         }
     }  // method to check the connection of MariaDB
     Connection conn=   CheckMariaConnection();
-    public void InsertDataIntoRelationalDB(String String1,String String2) throws Exception  {
+    public void InsertDataIntoRelationalDB(String timeStamp,String id,String signal,Double avg,Double std,Double Max,Double Min) throws Exception  {
         try {
 
             PreparedStatement doInsert = conn.prepareStatement("INSERT INTO exporteddata (Signal1,Val) " +
-                                            "VALUES ('" + String1 + "','" + String2 + "') ");
+                                            "VALUES ('" + timeStamp + "','" + id + "') ");
             doInsert.executeUpdate();
-            System.out.println("Insert Completed");
+          //  System.out.println("Insert Completed");
 
         } catch (Exception e){
             System.out.println(e);
