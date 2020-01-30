@@ -17,7 +17,6 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static java.util.Arrays.asList;
 
-
 public  class MyMethods {
     private MongoClientURI MyMongoUri = new MongoClientURI("mongodb://etlReader:just3Xtr4ct@10.10.101.113:27017/sigit_his");
     private MongoClient mongoClient = new MongoClient(MyMongoUri);

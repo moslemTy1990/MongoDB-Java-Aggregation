@@ -9,7 +9,7 @@ public class MariaClass {
         Connection conn = null;
         try {
             Class.forName("org.mariadb.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/test?user=root&passwors=");
+            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/mongodbdata?user=root&passwors=");
           //  JOptionPane.showMessageDialog(null, "Success");
           return conn;
         } catch (Exception e) {
