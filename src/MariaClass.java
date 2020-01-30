@@ -10,7 +10,7 @@ public class MariaClass {
         try {
             Class.forName("org.mariadb.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/mongodbdata?user=root&passwors=");
-          //  JOptionPane.showMessageDialog(null, "Success");
+            System.out.println("MariaDb Connection Stablished");
           return conn;
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error" + e);
@@ -18,19 +18,40 @@ public class MariaClass {
         }
     }  // method to check the connection of MariaDB
     Connection conn=   CheckMariaConnection();
-    public void InsertDataIntoRelationalDB(String timeStamp,String id,String signal,Double avg,Double std,Double Max,Double Min) throws Exception  {
+    public void InsertDataIntoRelationalDB(String timeStamp,String id,String Nsignal,Double avg,Double std,Double Max,Double Min) throws Exception  {
+
+        String myQuery ="INSERT INTO exporteddata (timeStamp,id,signalName,average,std,max,min) " +
+                        "VALUES ('"
+                                    + timeStamp + "','"
+                                    + id + "','"
+                                    + Nsignal +  "',"
+                                    + avg + ","
+                                    + std + ","
+                                    + Max + ","
+                                    + Min  +
+                                ")";
+
         try {
 
-            PreparedStatement doInsert = conn.prepareStatement("INSERT INTO exporteddata (timeStamp,id,average,std,max,min) " +
-                                            "VALUES ('" + timeStamp + "','" + id + "'," + avg + "," + std +"," + Max+"," + Min +") ");
+            PreparedStatement doInsert = conn.prepareStatement(myQuery);
             doInsert.executeUpdate();
-          //  System.out.println("Insert Completed");
-
         } catch (Exception e){
             System.out.println(e);
         }
     }
 }
+/*
+create table mongodbdata.exporteddata
+(
+	timeStamp varchar(30) null,
+	id varchar(30) null,
+	signal varchar(300) null,
+	average double null,
+	std double null,
+	max double null,
+	min double null
+);
+* */
 
 
 
