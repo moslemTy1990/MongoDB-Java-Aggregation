@@ -99,15 +99,16 @@ public  class MyMethods {
             System.out.println(Document);
         }
 
-
         resultbuckt.forEach(f -> saveToMariaDB(
                                                    ConvertTimeStamp((long)f.get("_id")) ,
                                                     f.get("id").toString() ,
                                                     f.get("signal").toString(),
-                                                    (Double)f.get("Average"),
-                                                    (Double)f.get("STD"),
+                                                    (Double) f.get("Min"),
                                                     (Double) f.get("Max"),
-                                                    (Double) f.get("Min")
+                                                    (Double)f.get("Average"),
+                                                    (Double)f.get("STD")
+
+
                                                  ));
     }
 

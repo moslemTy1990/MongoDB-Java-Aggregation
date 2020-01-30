@@ -18,17 +18,17 @@ public class MariaClass {
         }
     }  // method to check the connection of MariaDB
     Connection conn=   CheckMariaConnection();
-    public void InsertDataIntoRelationalDB(String timeStamp,String id,String Nsignal,Double avg,Double std,Double Max,Double Min) throws Exception  {
+    public void InsertDataIntoRelationalDB(String timeStamp,String device_key,String signal_code,Double min_value,Double max_value,Double avg_value,Double std_value) throws Exception  {
 
-        String myQuery ="INSERT INTO exporteddata (timeStamp,id,signalName,average,std,max,min) " +
+        String myQuery ="INSERT INTO mongodb_data (device_key,signal_code,min_value,max_value,avg_value,std_value) " +
                         "VALUES ('"
-                                    + timeStamp + "','"
-                                    + id + "','"
-                                    + Nsignal +  "',"
-                                    + avg + ","
-                                    + std + ","
-                                    + Max + ","
-                                    + Min  +
+                                 //   + timeStamp + "','"
+                                    + device_key + "','"
+                                    + signal_code +  "',"
+                                    + min_value + ","
+                                    + max_value + ","
+                                    + avg_value + ","
+                                    + std_value  +
                                 ")";
 
         try {
@@ -41,16 +41,21 @@ public class MariaClass {
     }
 }
 /*
-create table mongodbdata.exporteddata
+create table mongodbdata.MongoDB_Data
 (
-	timeStamp varchar(30) null,
-	id varchar(30) null,
-	signal varchar(300) null,
-	average double null,
-	std double null,
-	max double null,
-	min double null
+	technical_key bigint auto_increment,
+	device_key varchar(30) null,
+	signal_code varchar(30) null,
+	date_key date null,
+	time_key time null,
+	min_value DOUBLE null,
+	max_value DOUBLE null,
+	avg_value DOUBLE null,
+	std_value DOUBLE null,
+	primary key (technical_key)
 );
+
+
 * */
 
 
