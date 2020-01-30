@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MariaClass {
 
@@ -18,13 +21,15 @@ public class MariaClass {
         }
     }  // method to check the connection of MariaDB
     Connection conn=   CheckMariaConnection();
-    public void InsertDataIntoRelationalDB(String timeStamp,String device_key,String signal_code,Double min_value,Double max_value,Double avg_value,Double std_value) throws Exception  {
+    public void InsertDataIntoRelationalDB(Date date_key, String device_key, String signal_code,
+                                            Double min_value, Double max_value, Double avg_value, Double std_value) throws Exception  {
 
-        String myQuery ="INSERT INTO mongodb_data (device_key,signal_code,min_value,max_value,avg_value,std_value) " +
+        String myQuery ="INSERT INTO mongodb_data (device_key,signal_code,date_key,time_key,min_value,max_value,avg_value,std_value) " +
                         "VALUES ('"
-                                 //   + timeStamp + "','"
                                     + device_key + "','"
-                                    + signal_code +  "',"
+                                    + signal_code +  "','"
+                                    + dateHour(date_key,'D') + "','"
+                                    + dateHour(date_key,'H') + "',"
                                     + min_value + ","
                                     + max_value + ","
                                     + avg_value + ","
@@ -32,12 +37,36 @@ public class MariaClass {
                                 ")";
 
         try {
-
             PreparedStatement doInsert = conn.prepareStatement(myQuery);
             doInsert.executeUpdate();
         } catch (Exception e){
             System.out.println(e);
         }
+    }
+
+    /*
+     *In this function i split the date and time in seprate field.
+     */
+    private String dateHour(Date date_key,Character type){
+        String returntime;
+        String strDateFormat = "yyyy/MM/dd";
+        String strHourFormat = "HH:mm:ss";
+        String strDateHourFormat = "yyyy/MM/dd HH:mm:ss";
+        SimpleDateFormat date = new SimpleDateFormat(strDateFormat);
+        SimpleDateFormat hour = new SimpleDateFormat(strHourFormat);
+        SimpleDateFormat fulldate = new SimpleDateFormat(strDateHourFormat);
+
+        switch (type) {
+            case 'H':
+                returntime = hour.format(date_key);
+                break;
+            case 'D':
+                returntime = date.format(date_key);
+                break;
+            default:
+                returntime = fulldate.format(date_key);
+        }
+        return returntime;
     }
 }
 /*

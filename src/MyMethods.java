@@ -6,10 +6,12 @@ import com.mongodb.client.model.BucketOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static com.mongodb.client.model.Accumulators.*;
@@ -107,8 +109,6 @@ public  class MyMethods {
                                                     (Double) f.get("Max"),
                                                     (Double)f.get("Average"),
                                                     (Double)f.get("STD")
-
-
                                                  ));
     }
 
@@ -116,7 +116,7 @@ public  class MyMethods {
     * SaveToMariaDB is a method that filters a specific signal
     * and saves the Signal and its value to the database
     */
-    private void saveToMariaDB(String timeStamp , String id,String signal,Double avg, Double STD, Double Max, Double Min) {
+    private void saveToMariaDB(Date timeStamp , String id,String signal,Double avg, Double STD, Double Max, Double Min) {
 
             try{
                 MariaDB.InsertDataIntoRelationalDB(timeStamp, id,signal,avg,STD,Max,Min);
@@ -126,14 +126,9 @@ public  class MyMethods {
          }
 
     /*Converting the Milisec time to the date time and returning the value as string*/
-    private String ConvertTimeStamp(Long timeStamp){
-        Calendar timeStmp = Calendar.getInstance();
-        timeStmp.setTimeInMillis(timeStamp);
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
-        String TimeStamp = dateFormat.format(timeStmp.getTime());
-
-      return TimeStamp;
+    private Date  ConvertTimeStamp(Long timeStamp){
+        Date currentDate = new Date(timeStamp);
+      return currentDate;
     }
     /*
     *CreateBucetTimePeriod is a method that fills up the BucketList
