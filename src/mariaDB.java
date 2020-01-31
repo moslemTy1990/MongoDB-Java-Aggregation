@@ -6,7 +6,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MariaClass {
+public class mariaDB {
 
     public  static Connection CheckMariaConnection() {
         Connection conn = null;

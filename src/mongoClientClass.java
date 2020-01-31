@@ -6,9 +6,6 @@ import com.mongodb.client.model.BucketOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,13 +16,13 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static java.util.Arrays.asList;
 
-public  class MyMethods {
+public  class mongoClientClass {
     private MongoClientURI MyMongoUri = new MongoClientURI("mongodb://etlReader:just3Xtr4ct@10.10.101.113:27017/sigit_his");
     private MongoClient mongoClient = new MongoClient(MyMongoUri);
     private List<String> dbs = new ArrayList<>();
     private List<String> dbc = new ArrayList<>();
     private List<Long> timeBucketList = new ArrayList<>();
-    MariaClass MariaDB = new MariaClass();
+    mariaDB MariaDB = new mariaDB();
 
     // checking the mongoConnection
     public void CheckConnection() {
