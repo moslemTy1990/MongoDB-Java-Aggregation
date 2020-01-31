@@ -5,6 +5,10 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.BucketOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -21,12 +25,39 @@ public class mongoAdminClass {
     private static List<String> dbcAdmin = new ArrayList<>();
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         CheckMongoAdminConnection();    // Checking if the connection works or not
         getAdminCollection();   // Printing the Collection Names
         getCollectionasset();
 
+
+
+            Properties prop = readPropertiesFile("config.properties");
+            System.out.println("username: "+ prop.getProperty("username"));
+            System.out.println("password: "+ prop.getProperty("password"));
+
+
+
+
+
+    }
+
+    public static Properties readPropertiesFile(String fileName) throws IOException {
+        FileInputStream fis = null;
+        Properties prop = null;
+        try {
+            fis = new FileInputStream(fileName);
+            prop = new Properties();
+            prop.load(fis);
+        } catch(FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            fis.close();
+        }
+        return prop;
     }
 
     public static List<Document> getCollectionasset(){
