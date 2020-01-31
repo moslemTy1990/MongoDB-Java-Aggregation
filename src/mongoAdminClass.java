@@ -5,12 +5,9 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.BucketOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
 import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
@@ -24,7 +21,7 @@ public class mongoAdminClass {
     private static List<String> dbcAdmin = new ArrayList<>();
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         CheckMongoAdminConnection();    // Checking if the connection works or not
         getAdminCollection();   // Printing the Collection Names
@@ -40,7 +37,7 @@ public class mongoAdminClass {
 
         List<Document>  assetIDs = coll.aggregate(asList( idFilterBucket)).into(new ArrayList<Document>());
         for (Document Document : assetIDs) {
-            System.out.println(assetIDs);
+            System.out.println(Document);
         }
         return assetIDs;
     }
