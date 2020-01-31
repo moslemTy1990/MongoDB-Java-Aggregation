@@ -32,7 +32,7 @@ public  class mongoClientClass {
 
     // geting the collection on a list
     public void getCollection() {
-        System.out.println("the name of the collections of the data base: " + dbs.get(0) + "is" + getColectionNames());
+        System.out.println("the name of the collections of the data base: " + dbs.get(0) + " are " + getColectionNames());
     }
 
     public void FilterTemp() {

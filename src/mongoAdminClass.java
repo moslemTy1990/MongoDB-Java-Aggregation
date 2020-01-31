@@ -1,9 +1,21 @@
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.BucketOptions;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+
+import static com.mongodb.client.model.Accumulators.*;
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.eq;
+import static java.util.Arrays.asList;
 
 public class mongoAdminClass {
     private static MongoClientURI myAdminMongoUri = new MongoClientURI("mongodb://etlReader:just3Xtr4ct@10.10.101.117:27017/admin");
@@ -12,13 +24,25 @@ public class mongoAdminClass {
     private static List<String> dbcAdmin = new ArrayList<>();
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         CheckMongoAdminConnection();    // Checking if the connection works or not
         getAdminCollection();   // Printing the Collection Names
+        getCollectionasset();
+
+    }
+
+    public static List<Document> getCollectionasset(){
+        String IdPlant = "cambiano";
+        MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(3));
+        Bson idFilterBucket = match(eq("plant", IdPlant));
 
 
-
+        List<Document>  assetIDs = coll.aggregate(asList( idFilterBucket)).into(new ArrayList<Document>());
+        for (Document Document : assetIDs) {
+            System.out.println(assetIDs);
+        }
+        return assetIDs;
     }
 
     public static void CheckMongoAdminConnection() {
@@ -26,7 +50,7 @@ public class mongoAdminClass {
         System.out.println("The name of the data base: " + dbsAdmin.get(0));
     }
     public static void getAdminCollection() {
-        System.out.println("the name of the collections of the data base: " + dbsAdmin.get(0) + "is" + getColectionNames());
+        System.out.println("the name of the collections of the data base: " + dbsAdmin.get(0) + " are " + getColectionNames());
     }
     private static List<String> getDatabaseNames() {
         MongoCursor<String> dbsCursor = mongoAdmin.listDatabaseNames().iterator();
