@@ -171,9 +171,9 @@ public  class mongoClientClass {
 
     //List the collection of the database and put them into an array
     private List<String> getColectionNames() {
-        MongoCursor<String> Mycollections = mongoClient.getDatabase(dbs.get(0)).listCollectionNames().iterator();
-        while (Mycollections.hasNext()) {
-            dbc.add(Mycollections.next());
+        MongoCursor<String> myClientcollections = mongoClient.getDatabase(dbs.get(0)).listCollectionNames().iterator();
+        while (myClientcollections.hasNext()) {
+            dbc.add(myClientcollections.next());
         }
         return dbc;
     }
