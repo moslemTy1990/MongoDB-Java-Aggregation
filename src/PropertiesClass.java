@@ -21,7 +21,7 @@ public class PropertiesClass {
     private static String id_val;
     private static String timeStampField_lst;
     private static String filterField_id;
-    private static String unwindSignalArray_exp;
+    private static String signalArray_exp;
     private static String signals_signalfield;
     private static String timeStamp_lst_exp;
     private static String defaultBucket_opt;
@@ -34,6 +34,7 @@ public class PropertiesClass {
     private static String maxVal;
     private static String minVal;
     private static String insert_Into_mongodb_data;
+    private static String timeID;
 
     public static void setProperies() throws IOException {
         Properties prop = readPropertiesFile("config.properties");
@@ -54,19 +55,20 @@ public class PropertiesClass {
         Signal_val =  prop.getProperty("Signal_val");
         id_val =  prop.getProperty("id_val");
         timeStampField_lst =  prop.getProperty("timeStampField_lst");
-        unwindSignalArray_exp =  prop.getProperty("filterField_id");
-        unwindSignalArray_exp =  prop.getProperty("unwindSignalArray_exp");
+        filterField_id =  prop.getProperty("filterField_id");
+        signalArray_exp =  prop.getProperty("signalArray_exp");
         signals_signalfield =  prop.getProperty("signals_signalfield");
         timeStamp_lst_exp =  prop.getProperty("timeStamp_lst_exp");
         defaultBucket_opt =  prop.getProperty("defaultBucket_opt");
         id_exp =  prop.getProperty("id_exp");
         signalField =  prop.getProperty("signalField");
         signals_signalfield_exp =  prop.getProperty("signals_signalfield_exp");
-        averageField =  prop.getProperty("averageField");
+        averageField =  prop.getProperty("averageVal");
         toDouble_value =  prop.getProperty("toDouble_value");
         standardDevField =  prop.getProperty("standardDevField");
         maxVal =  prop.getProperty("maxVal");
         minVal =  prop.getProperty("minVal");
+        timeID = prop.getProperty("timeID");
     }
     public static Properties readPropertiesFile(String fileName) throws IOException {
         FileInputStream fis = null;
@@ -84,6 +86,11 @@ public class PropertiesClass {
         }
         return prop;
     }
+
+    public  String getTimeID() {
+        return timeID;
+    }
+
     public String getInsert_Into_mongodb_data(){
       return insert_Into_mongodb_data;
     }
@@ -138,8 +145,8 @@ public class PropertiesClass {
     public String getFilterField_id() {
         return filterField_id;
     }
-    public String getUnwindSignalArray_exp() {
-        return unwindSignalArray_exp;
+    public String getSignalArray_exp() {
+        return signalArray_exp;
     }
     public String getSignals_signalfield() {
         return signals_signalfield;

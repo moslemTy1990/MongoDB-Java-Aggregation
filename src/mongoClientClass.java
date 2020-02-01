@@ -70,24 +70,42 @@ public  class mongoClientClass {
             System.out.println(Document);
         }  */
 //-------------------------------------------------------------------------------------
-        String lastTimeStamp =mongoClientProp.getTimeStampField_lst();
+      //------
         String tempSignal = mongoClientProp.getSignal_val();
         String idManfc = mongoClientProp.getId_val();
+        //--------
+        String unwindSignal = mongoClientProp.getSignalArray_exp();
+        String id = mongoClientProp.getFilterField_id();
+        String signals_signalfield = mongoClientProp.getSignals_signalfield();
+        String lastTimeStamp =mongoClientProp.getTimeStampField_lst();
+        String groupByTimeStamp = mongoClientProp.getTimeStamp_lst_exp();
+        String sum = mongoClientProp.getDefaultBucket_opt();
+        String toDouble_value = mongoClientProp.getToDouble_value();
+        String standardDevField = mongoClientProp.getStandardDevField();
+        String maxVal = mongoClientProp.getMaxVal();
+        String minVal = mongoClientProp.getMinVal();
+        String averageVal = mongoClientProp.getAverageField();
+        String signal =mongoClientProp.getSignalField();
+        String signals_signalfield_exp = mongoClientProp.getSignals_signalfield_exp();
+        String id_exp = mongoClientProp.getId_exp();
+        String timeID = mongoClientProp.getTimeID() ;
+
+
 
         Bson startTimeBucket = match( gte(lastTimeStamp,startTime));
         Bson endTimeBucket= match(lte(lastTimeStamp,finishTime));
-        Bson idFilterBucket = match(eq("id", idManfc));
-        Bson unwindBucket = unwind("$signals");
-        Bson filterSignalUnBucket = match(eq("signals.signal", tempSignal));
+        Bson idFilterBucket = match(eq(id, idManfc));
+        Bson unwindBucket = unwind(unwindSignal);
+        Bson filterSignalUnBucket = match(eq(signals_signalfield, tempSignal));
 
-        Bson Bucket=bucket("$lastTimestamp", timeBucketList, new BucketOptions()
-                .defaultBucket("sum")
-                .output(min("id","$id"),
-                        min("signal","$signals.signal"),
-                        avg("Average",Document.parse("{$toDouble: \"$signals.value\"}")),
-                        stdDevSamp("STD",Document.parse("{$toDouble: \"$signals.value\"}")),
-                        max("Max",Document.parse("{$toDouble: \"$signals.value\"}")),
-                        min("Min",Document.parse("{$toDouble: \"$signals.value\"}"))
+        Bson Bucket=bucket(groupByTimeStamp, timeBucketList, new BucketOptions()
+                .defaultBucket(sum)
+                .output(min(id,id_exp),
+                        min(signal,signals_signalfield_exp),
+                        avg(averageVal,Document.parse(toDouble_value)),
+                        stdDevSamp(standardDevField,Document.parse(toDouble_value)),
+                        max(maxVal,Document.parse(toDouble_value)),
+                        min(minVal,Document.parse(toDouble_value))
                 )
         );
 
@@ -103,13 +121,13 @@ public  class mongoClientClass {
         }
 
         resultbuckt.forEach(f -> saveToMariaDB(
-                                                   ConvertTimeStamp((long)f.get("_id")) ,
-                                                    f.get("id").toString() ,
-                                                    f.get("signal").toString(),
-                                                    (Double) f.get("Min"),
-                                                    (Double) f.get("Max"),
-                                                    (Double)f.get("Average"),
-                                                    (Double)f.get("STD")
+                                                   ConvertTimeStamp((long)f.get(timeID)) ,
+                                                    f.get(id).toString() ,
+                                                    f.get(signal).toString(),
+                                                    (Double) f.get(minVal),
+                                                    (Double) f.get(maxVal),
+                                                    (Double)f.get(averageVal),
+                                                    (Double)f.get(standardDevField)
                                                  ));
     }
 
