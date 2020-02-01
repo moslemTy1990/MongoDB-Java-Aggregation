@@ -17,7 +17,8 @@ import static com.mongodb.client.model.Filters.*;
 import static java.util.Arrays.asList;
 
 public  class mongoClientClass {
-    private MongoClientURI MyMongoUri = new MongoClientURI("mongodb://etlReader:just3Xtr4ct@10.10.101.113:27017/sigit_his");
+    private static PropertiesClass mongoClientProp = new PropertiesClass();
+    private MongoClientURI MyMongoUri = new MongoClientURI(mongoClientProp.getClientMongoUri_sigit());
     private MongoClient mongoClient = new MongoClient(MyMongoUri);
     private List<String> dbs = new ArrayList<>();
     private List<String> dbc = new ArrayList<>();
@@ -36,10 +37,9 @@ public  class mongoClientClass {
     }
 
     public void FilterTemp() {
-        long startTime = Long.parseLong("1571842449859");    //selecting a period
-        long finishTime = Long.parseLong("1574438049859");
-        String mysignal = "InterfaceType.InjectionUnits.InjectionUnit_1.TemperatureZones.TemperatureZone_1.ActualTemperature";
-        String IdManfc = "144-12";
+        long startTime = Long.parseLong(mongoClientProp.getStartTime_val());    //selecting a period
+        long finishTime = Long.parseLong(mongoClientProp.getFinishTime_val());
+
 
         createBucketTimePeriod(startTime,finishTime);  //fill up the time period bucket
 
@@ -70,11 +70,15 @@ public  class mongoClientClass {
             System.out.println(Document);
         }  */
 //-------------------------------------------------------------------------------------
-        Bson startTimeBucket = match( gte("lastTimestamp",startTime));
-        Bson endTimeBucket= match(lte("lastTimestamp",finishTime));
-        Bson idFilterBucket = match(eq("id", IdManfc));
+        String lastTimeStamp =mongoClientProp.getTimeStampField_lst();
+        String tempSignal = mongoClientProp.getSignal_val();
+        String idManfc = mongoClientProp.getId_val();
+
+        Bson startTimeBucket = match( gte(lastTimeStamp,startTime));
+        Bson endTimeBucket= match(lte(lastTimeStamp,finishTime));
+        Bson idFilterBucket = match(eq("id", idManfc));
         Bson unwindBucket = unwind("$signals");
-        Bson filterSignalUnBucket = match(eq("signals.signal", mysignal));
+        Bson filterSignalUnBucket = match(eq("signals.signal", tempSignal));
 
         Bson Bucket=bucket("$lastTimestamp", timeBucketList, new BucketOptions()
                 .defaultBucket("sum")

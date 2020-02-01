@@ -19,52 +19,29 @@ import static com.mongodb.client.model.Filters.eq;
 import static java.util.Arrays.asList;
 
 public class mongoAdminClass {
-    private static MongoClientURI myAdminMongoUri = new MongoClientURI("mongodb://etlReader:just3Xtr4ct@10.10.101.117:27017/admin");
-    private static MongoClient mongoAdmin = new MongoClient(myAdminMongoUri);
+    private static PropertiesClass mongoAdminProp;
     private static List<String> dbsAdmin = new ArrayList<>();
     private static List<String> dbcAdmin = new ArrayList<>();
-
+    private static MongoClientURI myAdminMongoUri;
+    private static MongoClient mongoAdmin;
 
     public static void main(String[] args) throws IOException {
-
+       // TTTTTTTTTTTTTTTTTTOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+        mongoAdminProp = new PropertiesClass();
+        mongoAdminProp.setProperies();
+        // TTTTTTTTTTTTTTTTTTooooooooooooooooooo
+        myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
+        mongoAdmin = new MongoClient(myAdminMongoUri);
         CheckMongoAdminConnection();    // Checking if the connection works or not
         getAdminCollection();   // Printing the Collection Names
         getCollectionasset();
-
-
-
-            Properties prop = readPropertiesFile("config.properties");
-            System.out.println("username: "+ prop.getProperty("username"));
-            System.out.println("password: "+ prop.getProperty("password"));
-
-
-
-
-
-    }
-
-    public static Properties readPropertiesFile(String fileName) throws IOException {
-        FileInputStream fis = null;
-        Properties prop = null;
-        try {
-            fis = new FileInputStream(fileName);
-            prop = new Properties();
-            prop.load(fis);
-        } catch(FileNotFoundException fnfe) {
-            fnfe.printStackTrace();
-        } catch(IOException ioe) {
-            ioe.printStackTrace();
-        } finally {
-            fis.close();
-        }
-        return prop;
     }
 
     public static List<Document> getCollectionasset(){
-        String IdPlant = "cambiano";
+        String idPlant =mongoAdminProp.getFilterPlant_val_cambiano();
+        String plant = mongoAdminProp.getFilterField_plant();
         MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(3));
-        Bson idFilterBucket = match(eq("plant", IdPlant));
-
+        Bson idFilterBucket = match(eq(plant, idPlant));
 
         List<Document>  assetIDs = coll.aggregate(asList( idFilterBucket)).into(new ArrayList<Document>());
         for (Document Document : assetIDs) {
@@ -95,6 +72,5 @@ public class mongoAdminClass {
         }
         return dbcAdmin;
     }
-
 }
 

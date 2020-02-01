@@ -7,12 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class mariaDB {
-
+private static PropertiesClass mariadbProp = new PropertiesClass();
     public  static Connection CheckMariaConnection() {
         Connection conn = null;
         try {
-            Class.forName("org.mariadb.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/mongodbdata?user=root&passwors=");
+            Class.forName(mariadbProp.getMariaClassDriver());
+            conn = DriverManager.getConnection(mariadbProp.getmariaDBUrl());
             System.out.println("MariaDb Connection Stablished");
           return conn;
         } catch (Exception e) {
@@ -24,12 +24,12 @@ public class mariaDB {
     public void InsertDataIntoRelationalDB(Date date_key, String device_key, String signal_code,
                                             Double min_value, Double max_value, Double avg_value, Double std_value) throws Exception  {
 
-        String myQuery ="INSERT INTO mongodb_data (device_key,signal_code,date_key,time_key,min_value,max_value,avg_value,std_value) " +
+        String myQuery = mariadbProp.getInsert_Into_mongodb_data() +
                         "VALUES ('"
                                     + device_key + "','"
                                     + signal_code +  "','"
-                                    + dateHour(date_key,'D') + "','"
-                                    + dateHour(date_key,'H') + "',"
+                                    + dateHour(date_key,mariadbProp.getDateType_day()) + "','"
+                                    + dateHour(date_key,mariadbProp.getDateType_hour()) + "',"
                                     + min_value + ","
                                     + max_value + ","
                                     + avg_value + ","
@@ -47,20 +47,20 @@ public class mariaDB {
     /*
      *In this function i split the date and time in seprate field.
      */
-    private String dateHour(Date date_key,Character type){
+    private String dateHour(Date date_key,String type){
         String returntime;
-        String strDateFormat = "yyyy/MM/dd";
-        String strHourFormat = "HH:mm:ss";
-        String strDateHourFormat = "yyyy/MM/dd HH:mm:ss";
+        String strDateFormat = mariadbProp.getStrDateFormat();
+        String strHourFormat = mariadbProp.getStrHourFormat();
+        String strDateHourFormat = mariadbProp.getStrDateHourFormat();
         SimpleDateFormat date = new SimpleDateFormat(strDateFormat);
         SimpleDateFormat hour = new SimpleDateFormat(strHourFormat);
         SimpleDateFormat fulldate = new SimpleDateFormat(strDateHourFormat);
 
         switch (type) {
-            case 'H':
+            case "H":
                 returntime = hour.format(date_key);
                 break;
-            case 'D':
+            case "D":
                 returntime = date.format(date_key);
                 break;
             default:
