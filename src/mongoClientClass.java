@@ -40,7 +40,6 @@ public  class mongoClientClass {
         long startTime = Long.parseLong(mongoClientProp.getStartTime_val());    //selecting a period
         long finishTime = Long.parseLong(mongoClientProp.getFinishTime_val());
 
-
         createBucketTimePeriod(startTime,finishTime);  //fill up the time period bucket
 
         MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(2));

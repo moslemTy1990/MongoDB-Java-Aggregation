@@ -35,9 +35,12 @@ public class PropertiesClass {
     private static String minVal;
     private static String insert_Into_mongodb_data;
     private static String timeID;
-
+    private static String manufacturer_field;
+    private static String gmb_val;
     public static void setProperies() throws IOException {
         Properties prop = readPropertiesFile("config.properties");
+        manufacturer_field= prop.getProperty("manufacturer_field");
+        gmb_val=prop.getProperty("gmb_val");
         insert_Into_mongodb_data = prop.getProperty("insert_Into_mongodb_data");
         mariaClassDriver =  prop.getProperty("mariaClassDriver");
         mariaDBUrl =  prop.getProperty("mariaDBUrl");
@@ -87,10 +90,17 @@ public class PropertiesClass {
         return prop;
     }
 
-    public  String getTimeID() {
-        return timeID;
+    public String getManufacturer_field() {
+        return manufacturer_field;
     }
 
+    public String getGmb_val() {
+        return gmb_val;
+    }
+
+    public String getTimeID() {
+        return timeID;
+    }
     public String getInsert_Into_mongodb_data(){
       return insert_Into_mongodb_data;
     }
