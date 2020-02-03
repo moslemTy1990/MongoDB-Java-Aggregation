@@ -25,27 +25,10 @@ public class mongoAdminClass {
     private static MongoClientURI myAdminMongoUri;
     private static MongoClient mongoAdmin;
 
-    public static void main(String[] args) throws IOException {
-       // TTTTTTTTTTTTTTTTTTOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-       mongoAdminProp = new PropertiesClass();
-        mongoAdminProp.setProperies();
-      //  myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
-      //  mongoAdmin = new MongoClient(myAdminMongoUri);
-
-        String id = mongoAdminProp.getFilterField_id();
-        String signal = mongoAdminProp.getSignalField();
-
-        List<Document> resultbuckt = getCollectionasset();
-
-
-        for(int i = 0; i < resultbuckt.size() ; i++){
-            System.out.println(resultbuckt.get(i).get("id"));
-        }
-    }
 
     public static List<Document> getCollectionasset() throws IOException {
-      //  mongoAdminProp = new PropertiesClass();
-      //  mongoAdminProp.setProperies();
+        mongoAdminProp = new PropertiesClass();
+        mongoAdminProp.setProperies();
         myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
         mongoAdmin = new MongoClient(myAdminMongoUri);
 

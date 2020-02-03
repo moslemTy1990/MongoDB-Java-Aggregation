@@ -6,6 +6,7 @@ import com.mongodb.client.model.BucketOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,12 +19,13 @@ import static java.util.Arrays.asList;
 
 public  class mongoClientClass {
     private static PropertiesClass mongoClientProp = new PropertiesClass();
-    private MongoClientURI MyMongoUri = new MongoClientURI(mongoClientProp.getClientMongoUri_sigit());
+    private MongoClientURI MyMongoUri = new MongoClientURI(mongoClientProp.getClientMongoUri_sigit()); // connecition string
     private MongoClient mongoClient = new MongoClient(MyMongoUri);
     private List<String> dbs = new ArrayList<>();
     private List<String> dbc = new ArrayList<>();
     private List<Long> timeBucketList = new ArrayList<>();
     mariaDB MariaDB = new mariaDB();
+    mongoAdminClass adminclass;
 
     // checking the mongoConnection
     public void CheckConnection() {
@@ -36,11 +38,11 @@ public  class mongoClientClass {
         System.out.println("the name of the collections of the data base: " + dbs.get(0) + " are " + getColectionNames());
     }
 
-    public void FilterTemp() {
+    public void FilterTemp() throws IOException {
         long startTime = Long.parseLong(mongoClientProp.getStartTime_val());    //selecting a period
         long finishTime = Long.parseLong(mongoClientProp.getFinishTime_val());
 
-        createBucketTimePeriod(startTime,finishTime);  //fill up the time period bucket
+        createBucketTimePeriod(startTime, finishTime);  //fill up the time period bucket
 
         MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(2));
 //---------------------------------------------------------------------------------------------------------------
@@ -69,14 +71,10 @@ public  class mongoClientClass {
             System.out.println(Document);
         }  */
 //-------------------------------------------------------------------------------------
-      //------
-        String tempSignal = mongoClientProp.getSignal_val();
-        String idManfc = mongoClientProp.getId_val();
-        //--------
         String unwindSignal = mongoClientProp.getSignalArray_exp();
         String id = mongoClientProp.getFilterField_id();
         String signals_signalfield = mongoClientProp.getSignals_signalfield();
-        String lastTimeStamp =mongoClientProp.getTimeStampField_lst();
+        String lastTimeStamp = mongoClientProp.getTimeStampField_lst();
         String groupByTimeStamp = mongoClientProp.getTimeStamp_lst_exp();
         String sum = mongoClientProp.getDefaultBucket_opt();
         String toDouble_value = mongoClientProp.getToDouble_value();
@@ -84,50 +82,58 @@ public  class mongoClientClass {
         String maxVal = mongoClientProp.getMaxVal();
         String minVal = mongoClientProp.getMinVal();
         String averageVal = mongoClientProp.getAverageField();
-        String signal =mongoClientProp.getSignalField();
+        String signal = mongoClientProp.getSignalField();
         String signals_signalfield_exp = mongoClientProp.getSignals_signalfield_exp();
         String id_exp = mongoClientProp.getId_exp();
-        String timeID = mongoClientProp.getTimeID() ;
+        String timeID = mongoClientProp.getTimeID();
 
 
+        String tempSignal = mongoClientProp.getSignal_val();
 
-        Bson startTimeBucket = match( gte(lastTimeStamp,startTime));
-        Bson endTimeBucket= match(lte(lastTimeStamp,finishTime));
-        Bson idFilterBucket = match(eq(id, idManfc));
-        Bson unwindBucket = unwind(unwindSignal);
-        Bson filterSignalUnBucket = match(eq(signals_signalfield, tempSignal));
+        List<Document> IdBuckets = adminclass.getCollectionasset();
 
-        Bson Bucket=bucket(groupByTimeStamp, timeBucketList, new BucketOptions()
-                .defaultBucket(sum)
-                .output(min(id,id_exp),
-                        min(signal,signals_signalfield_exp),
-                        avg(averageVal,Document.parse(toDouble_value)),
-                        stdDevSamp(standardDevField,Document.parse(toDouble_value)),
-                        max(maxVal,Document.parse(toDouble_value)),
-                        min(minVal,Document.parse(toDouble_value))
-                )
-        );
 
-        List<Document> resultbuckt = coll.aggregate(asList(startTimeBucket,
-                                                            endTimeBucket,
-                                                            idFilterBucket,
-                                                            unwindBucket,
-                                                            filterSignalUnBucket,
-                                                            Bucket
-                                                    )).into(new ArrayList<Document>());
-        for (Document Document : resultbuckt) {
-            System.out.println(Document);
+        for (int i = 0; i < IdBuckets.size(); i++) {
+           String idManfc = IdBuckets.get(i).get("id").toString();
+
+            Bson startTimeBucket = match(gte(lastTimeStamp, startTime));
+            Bson endTimeBucket = match(lte(lastTimeStamp, finishTime));
+            Bson idFilterBucket = match(eq(id, idManfc));
+            Bson unwindBucket = unwind(unwindSignal);
+            Bson filterSignalUnBucket = match(eq(signals_signalfield, tempSignal));
+
+            Bson Bucket = bucket(groupByTimeStamp, timeBucketList, new BucketOptions()
+                    .defaultBucket(sum)
+                    .output(min(id, id_exp),
+                            min(signal, signals_signalfield_exp),
+                            avg(averageVal, Document.parse(toDouble_value)),
+                            stdDevSamp(standardDevField, Document.parse(toDouble_value)),
+                            max(maxVal, Document.parse(toDouble_value)),
+                            min(minVal, Document.parse(toDouble_value))
+                    )
+            );
+
+            List<Document> resultbuckt = coll.aggregate(asList(startTimeBucket,
+                    endTimeBucket,
+                    idFilterBucket,
+                    unwindBucket,
+                    filterSignalUnBucket,
+                    Bucket
+            )).into(new ArrayList<Document>());
+            for (Document Document : resultbuckt) {
+                System.out.println(Document);
+            }
+
+            resultbuckt.forEach(f -> saveToMariaDB(
+                    ConvertTimeStamp((long) f.get(timeID)),
+                    f.get(id).toString(),
+                    f.get(signal).toString(),
+                    (Double) f.get(minVal),
+                    (Double) f.get(maxVal),
+                    (Double) f.get(averageVal),
+                    (Double) f.get(standardDevField)
+            ));
         }
-
-        resultbuckt.forEach(f -> saveToMariaDB(
-                                                   ConvertTimeStamp((long)f.get(timeID)) ,
-                                                    f.get(id).toString() ,
-                                                    f.get(signal).toString(),
-                                                    (Double) f.get(minVal),
-                                                    (Double) f.get(maxVal),
-                                                    (Double)f.get(averageVal),
-                                                    (Double)f.get(standardDevField)
-                                                 ));
     }
 
     /*
