@@ -26,6 +26,8 @@ public class mongoAdminClass {
     private static MongoClient mongoAdmin;
 
 
+
+
     public static List<Document> getCollectionasset() throws IOException {
         mongoAdminProp = new PropertiesClass();
         mongoAdminProp.setProperies();
@@ -44,7 +46,9 @@ public class mongoAdminClass {
         Bson filterPlant = match(eq(plant, idCambiano));
         Bson filtermanufacture = match(eq(manufacturer, gmb));
 
-        List<Document>  assetIDs = coll.aggregate(asList( filterPlant,filtermanufacture)).into(new ArrayList<Document>());
+        List<Document>  assetIDs = coll.aggregate(asList( filterPlant
+                                                        ,filtermanufacture
+                                                         )).into(new ArrayList<Document>());
         for (Document Document : assetIDs) {
             System.out.println(Document);
         }

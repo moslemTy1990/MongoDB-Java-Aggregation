@@ -39,38 +39,6 @@ public  class mongoClientClass {
     }
 
     public void FilterTemp() throws IOException {
-        long startTime = Long.parseLong(mongoClientProp.getStartTime_val());    //selecting a period
-        long finishTime = Long.parseLong(mongoClientProp.getFinishTime_val());
-
-        createBucketTimePeriod(startTime, finishTime);  //fill up the time period bucket
-
-        MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(2));
-//---------------------------------------------------------------------------------------------------------------
-  /*      Bson startTimeUnwind = match( gt("lastTimestamp",startTime));
-        Bson endTimeUnwind= match(lte("lastTimestamp",finishTime));
-        Bson idFilterUnwind = match(eq("id", IdManfc));
-        Bson unwind = unwind("$signals");
-        Bson filterSignalUnwind = match(eq("signals.signal",  mysignal));
-        Bson groupUnwind=group("$signals.signal",
-                avg("Average","$signals.value"),
-                stdDevSamp("STD","$signals.value"),
-                max("Max","$signals.value"),
-                min("Min","$signals.value")
-        );
-
-       List<Bson> pipeline =  asList(idFilterUnwind,
-                startTimeUnwind,
-                endTimeUnwind,
-                unwind,
-                filterSignalUnwind,
-                groupUnwind
-        );
-
-        List<Document> results = coll.aggregate(pipeline).into(new ArrayList<Document>());
-        for (Document Document : results) {
-            System.out.println(Document);
-        }  */
-//-------------------------------------------------------------------------------------
         String unwindSignal = mongoClientProp.getSignalArray_exp();
         String id = mongoClientProp.getFilterField_id();
         String signals_signalfield = mongoClientProp.getSignals_signalfield();
@@ -87,6 +55,12 @@ public  class mongoClientClass {
         String id_exp = mongoClientProp.getId_exp();
         String timeID = mongoClientProp.getTimeID();
 
+        long startTime = Long.parseLong(mongoClientProp.getStartTime_val());    //selecting a period
+        long finishTime = Long.parseLong(mongoClientProp.getFinishTime_val());
+
+        createBucketTimePeriod(startTime, finishTime);  //fill up the time period bucket
+
+        MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(2));
 
         String tempSignal = mongoClientProp.getSignal_val();
 
@@ -94,14 +68,13 @@ public  class mongoClientClass {
 
 
         for (int i = 0; i < IdBuckets.size(); i++) {
-           String idManfc = IdBuckets.get(i).get("id").toString();
+           String idManfc = IdBuckets.get(i).get(id).toString();
 
             Bson startTimeBucket = match(gte(lastTimeStamp, startTime));
             Bson endTimeBucket = match(lte(lastTimeStamp, finishTime));
             Bson idFilterBucket = match(eq(id, idManfc));
             Bson unwindBucket = unwind(unwindSignal);
             Bson filterSignalUnBucket = match(eq(signals_signalfield, tempSignal));
-
             Bson Bucket = bucket(groupByTimeStamp, timeBucketList, new BucketOptions()
                     .defaultBucket(sum)
                     .output(min(id, id_exp),
@@ -119,6 +92,7 @@ public  class mongoClientClass {
                     unwindBucket,
                     filterSignalUnBucket,
                     Bucket
+
             )).into(new ArrayList<Document>());
             for (Document Document : resultbuckt) {
                 System.out.println(Document);
