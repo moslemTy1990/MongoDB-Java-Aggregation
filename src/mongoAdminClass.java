@@ -25,6 +25,14 @@ public class mongoAdminClass {
     private static MongoClientURI myAdminMongoUri;
     private static MongoClient mongoAdmin;
 
+    public static void main(String[] args) throws IOException {
+        getCollectionasset();
+        getTechSignals();
+
+    }
+
+
+
 
 
 
@@ -77,5 +85,48 @@ public class mongoAdminClass {
         }
         return dbcAdmin;
     }
+
+    public static List<Document> getTechSignals() throws IOException {
+     //   mongoAdminProp = new PropertiesClass();
+     //   mongoAdminProp.setProperies();
+      //  myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
+      //  mongoAdmin = new MongoClient(myAdminMongoUri);
+
+       // CheckMongoAdminConnection();    // Checking if the connection works or not
+       // getAdminCollection();   // Printing the Collection Names
+
+        String category = mongoAdminProp.getCategory();
+        String technological = mongoAdminProp.getTechnological();
+
+        MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(0));
+        Bson filterPlant = match(eq(category, technological));
+
+        List<Document>  techSignalList = coll.aggregate(asList( filterPlant
+        )).into(new ArrayList<Document>());
+        for (Document Document : techSignalList) {
+            System.out.println(Document);
+        }
+        return techSignalList;
+    }
+
+    public static List<Document> getHashMapKeyAndValue() throws IOException {
+        //   mongoAdminProp = new PropertiesClass();
+        //   mongoAdminProp.setProperies();
+        //  myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
+        //  mongoAdmin = new MongoClient(myAdminMongoUri);
+
+        // CheckMongoAdminConnection();    // Checking if the connection works or not
+        // getAdminCollection();   // Printing the Collection Names
+
+
+
+        MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(4));
+        Bson filterPlant = match(eq(category, technological));
+
+        List<Document>  hashMapList = coll.aggregate(asList( filterPlant
+        )).into(new ArrayList<Document>());
+        return hashMapList;
+    }
+
 }
 

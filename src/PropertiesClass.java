@@ -37,6 +37,8 @@ public class PropertiesClass {
     private static String timeID;
     private static String manufacturer_field;
     private static String gmb_val;
+    private static String technological;
+    private static String category;
     public static void setProperies() throws IOException {
         Properties prop = readPropertiesFile("config.properties");
         manufacturer_field= prop.getProperty("manufacturer_field");
@@ -72,6 +74,8 @@ public class PropertiesClass {
         maxVal =  prop.getProperty("maxVal");
         minVal =  prop.getProperty("minVal");
         timeID = prop.getProperty("timeID");
+        category = prop.getProperty("category");
+        technological = prop.getProperty("technological");
     }
     public static Properties readPropertiesFile(String fileName) throws IOException {
         FileInputStream fis = null;
@@ -88,6 +92,14 @@ public class PropertiesClass {
             fis.close();
         }
         return prop;
+    }
+
+    public String getTechnological() {
+        return technological;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public String getManufacturer_field() {
