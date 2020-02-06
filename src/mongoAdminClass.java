@@ -9,9 +9,8 @@ import org.bson.conversions.Bson;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
+
 import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
@@ -28,6 +27,8 @@ public class mongoAdminClass {
     public static void main(String[] args) throws IOException {
         getCollectionasset();
         getTechSignals();
+        getHashMapKeyAndValue();
+
 
     }
 
@@ -86,7 +87,7 @@ public class mongoAdminClass {
         return dbcAdmin;
     }
 
-    public static List<Document> getTechSignals() throws IOException {
+    public static List<String> getTechSignals() throws IOException {
      //   mongoAdminProp = new PropertiesClass();
      //   mongoAdminProp.setProperies();
       //  myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
@@ -99,33 +100,60 @@ public class mongoAdminClass {
         String technological = mongoAdminProp.getTechnological();
 
         MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(0));
-        Bson filterPlant = match(eq(category, technological));
+        Bson filterPlant = eq(category, technological);
+        List<Document> listTech = new ArrayList<>();
+        List<String> techSignalArray =  new ArrayList<>();
 
-        List<Document>  techSignalList = coll.aggregate(asList( filterPlant
-        )).into(new ArrayList<Document>());
-        for (Document Document : techSignalList) {
-            System.out.println(Document);
+        coll.find(filterPlant)
+                .iterator()
+                .forEachRemaining(listTech::add);
+
+        for ( Document doc: listTech) {
+          //  List<Document> arr = (List<Document>) doc.get("signals");
+            techSignalArray.add(((String)doc.get("openplatid")));
         }
-        return techSignalList;
+        for ( String item:techSignalArray
+             ) {
+            System.out.println(item);
+        }
+
+     /*   for (Document Document : listTech) {
+            System.out.println(Document);
+        }*/
+        return techSignalArray;
     }
 
-    public static List<Document> getHashMapKeyAndValue() throws IOException {
-        //   mongoAdminProp = new PropertiesClass();
-        //   mongoAdminProp.setProperies();
-        //  myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
-        //  mongoAdmin = new MongoClient(myAdminMongoUri);
+    public static HashMap<String,String> getHashMapKeyAndValue() throws IOException {
 
-        // CheckMongoAdminConnection();    // Checking if the connection works or not
-        // getAdminCollection();   // Printing the Collection Names
-
-
+        HashMap<String,String> kuraIdPlatIdHashMap = new HashMap<String,String>();
 
         MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(4));
-        Bson filterPlant = match(eq(category, technological));
+        Bson filterType = type("signals", "array");
+       // Bson filterXpr = expr(Document.parse("{ $gt: [ { $size: '$signals' }, 0 ] }"));
+        List<Document> listHash = new ArrayList<>();
 
-        List<Document>  hashMapList = coll.aggregate(asList( filterPlant
-        )).into(new ArrayList<Document>());
-        return hashMapList;
+        coll.find(and(filterType))
+                .iterator()
+                .forEachRemaining(listHash::add);
+
+        for ( Document doc: listHash) {
+            List<Document> arr = (List<Document>) doc.get("signals");
+            arr.forEach(e ->  kuraIdPlatIdHashMap.put((String)e.get("kuraid"),(String)e.get("openplatid")) );
+        }
+      //  System.out.println(kuraIdPlatIdHashMap.size());
+
+        while(kuraIdPlatIdHashMap.keySet().remove(null));
+        while(kuraIdPlatIdHashMap.values().remove(null));
+
+       // System.out.println(kuraIdPlatIdHashMap.size());
+
+       /* for (Object obj : kuraIdPlatIdHashMap.entrySet()) {
+            Map.Entry<String, String> entry = (Map.Entry) obj;
+            System.out.print("Key: " + entry.getKey());
+            System.out.println(", Value: " + entry.getValue());
+        }
+*/
+       return kuraIdPlatIdHashMap;
     }
 
 }
