@@ -2,16 +2,12 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.BucketOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
-import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Filters.eq;
@@ -26,16 +22,32 @@ public class mongoAdminClass {
 
     public static void main(String[] args) throws IOException {
         getCollectionasset();
-        getTechSignals();
-        getHashMapKeyAndValue();
-
+        gettechsiganls();
 
     }
 
+    public static List<String> gettechsiganls() throws IOException {
+        List<String> techSignals = new ArrayList() ;
+        List<String> kuraIdTechignals = new ArrayList<>();
+        HashMap<String,String> hashMappedSignals = new HashMap<String,String>();
+        techSignals =getTechSignals();
+        hashMappedSignals=getHashMapKeyAndValue();
+        System.out.println(hashMappedSignals.size());
+        try {
 
-
-
-
+            for (Object obj : hashMappedSignals.entrySet()) {
+                Map.Entry<String, String> entry = (Map.Entry) obj;
+                String key = entry.getKey();
+                if (techSignals.contains(entry.getValue())==true) {
+                    kuraIdTechignals.add(key);
+                    // while (hashMappedSignals.keySet().remove(key));
+                }
+            }
+        }catch (Exception e){
+            System.out.println("Error : " + e.toString());
+        }
+        return  kuraIdTechignals;
+    }
 
     public static List<Document> getCollectionasset() throws IOException {
         mongoAdminProp = new PropertiesClass();
@@ -109,17 +121,8 @@ public class mongoAdminClass {
                 .forEachRemaining(listTech::add);
 
         for ( Document doc: listTech) {
-          //  List<Document> arr = (List<Document>) doc.get("signals");
             techSignalArray.add(((String)doc.get("openplatid")));
         }
-        for ( String item:techSignalArray
-             ) {
-            System.out.println(item);
-        }
-
-     /*   for (Document Document : listTech) {
-            System.out.println(Document);
-        }*/
         return techSignalArray;
     }
 
@@ -145,8 +148,7 @@ public class mongoAdminClass {
         while(kuraIdPlatIdHashMap.keySet().remove(null));
         while(kuraIdPlatIdHashMap.values().remove(null));
 
-       // System.out.println(kuraIdPlatIdHashMap.size());
-
+      //  System.out.println(kuraIdPlatIdHashMap.containsValue("@InterfaceType.Jobs.ActiveJob.MouldDescription"));
        /* for (Object obj : kuraIdPlatIdHashMap.entrySet()) {
             Map.Entry<String, String> entry = (Map.Entry) obj;
             System.out.print("Key: " + entry.getKey());
