@@ -21,8 +21,8 @@ public class mongoAdminClass {
     private static MongoClient mongoAdmin;
 
     public static void main(String[] args) throws IOException {
-        getCollectionasset();
-        gettechsiganls();
+      //  getCollectionasset();  //returns list
+        gettechsiganls();       //returns list
 
     }
 
@@ -32,7 +32,7 @@ public class mongoAdminClass {
         HashMap<String,String> hashMappedSignals = new HashMap<String,String>();
         techSignals =getTechSignals();
         hashMappedSignals=getHashMapKeyAndValue();
-        System.out.println(hashMappedSignals.size());
+     //   System.out.println(hashMappedSignals.size());
         try {
 
             for (Object obj : hashMappedSignals.entrySet()) {
@@ -43,33 +43,33 @@ public class mongoAdminClass {
                     // while (hashMappedSignals.keySet().remove(key));
                 }
             }
+         //   System.out.println(kuraIdTechignals.size());
         }catch (Exception e){
             System.out.println("Error : " + e.toString());
         }
         return  kuraIdTechignals;
     }
 
-    public static List<Document> getCollectionasset() throws IOException {
+    public static List<Document> getCollectionasset(String plantName) throws IOException {
         mongoAdminProp = new PropertiesClass();
         mongoAdminProp.setProperies();
         myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
         mongoAdmin = new MongoClient(myAdminMongoUri);
+        String plant = mongoAdminProp.getFilterField_plant();
 
         CheckMongoAdminConnection();    // Checking if the connection works or not
         getAdminCollection();   // Printing the Collection Names
 
-        String idCambiano =mongoAdminProp.getFilterPlant_val_cambiano();
-        String plant = mongoAdminProp.getFilterField_plant();
-        String manufacturer=mongoAdminProp.getManufacturer_field();
-        String gmb =mongoAdminProp.getGmb_val() ;
+
+
 
         MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(3));
-        Bson filterPlant = match(eq(plant, idCambiano));
-        Bson filtermanufacture = match(eq(manufacturer, gmb));
-
-        List<Document>  assetIDs = coll.aggregate(asList( filterPlant
-                                                        ,filtermanufacture
-                                                         )).into(new ArrayList<Document>());
+        Bson customer = match(eq("customer", "sigit"));
+        Bson plantname = match(eq(plant, plantName));;
+        List<Document>  assetIDs = coll.aggregate(
+                                                    asList( customer
+                                                            ,plantname
+                                                    )).into(new ArrayList<Document>());
         for (Document Document : assetIDs) {
             System.out.println(Document);
         }
