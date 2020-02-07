@@ -64,8 +64,6 @@ public  class mongoClientClass {
         Bson endTimeBucket = match(lte(lastTimeStamp, finishTime));
         Bson unwindBucket = unwind(unwindSignal);
 
-
-
         for (int j = 0; j < dbc.size(); j++){
             List<Document> IdBuckets = adminclass.getCollectionasset(dbc.get(j));
             MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(j));
@@ -78,7 +76,6 @@ public  class mongoClientClass {
                for (int k = 0; k < signalBuckets.size(); k++) {
                    String signalName = signalBuckets.get(k);
                    Bson filterSignalUnBucket = match(eq(signals_signalfield, signalName));
-
 
                    Bson Bucket = bucket(groupByTimeStamp, timeBucketList, new BucketOptions()
                            .defaultBucket(sum)

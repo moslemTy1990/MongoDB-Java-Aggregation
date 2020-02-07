@@ -22,7 +22,7 @@ public class mongoAdminClass {
 
     public static void main(String[] args) throws IOException {
       //  getCollectionasset();  //returns list
-        gettechsiganls();       //returns list
+      //  gettechsiganls();       //returns list
 
     }
 
