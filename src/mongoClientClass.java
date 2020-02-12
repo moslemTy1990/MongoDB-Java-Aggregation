@@ -103,7 +103,7 @@ public  class mongoClientClass {
                    resultbuckt.forEach(f -> saveToMariaDB(
                            ConvertTimeStamp((long) f.get(timeID)),
                            f.get(id).toString(),
-                           f.get(signal).toString(),
+                           getOpenPlatIdSignal(f.get(signal).toString()),
                            (Double) f.get(minVal),
                            (Double) f.get(maxVal),
                            (Double) f.get(averageVal),
@@ -114,6 +114,13 @@ public  class mongoClientClass {
         }
     }
 
+    private  String getOpenPlatIdSignal(String sig){
+
+
+// here define the hashmap. and search if the signal is in the kuraID of hashmap return the openplatid
+
+        return sig;
+    }
     /*
     * SaveToMariaDB is a method that filters a specific signal
     * and saves the Signal and its value to the database

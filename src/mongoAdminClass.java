@@ -60,9 +60,6 @@ public class mongoAdminClass {
         CheckMongoAdminConnection();    // Checking if the connection works or not
         getAdminCollection();   // Printing the Collection Names
 
-
-
-
         MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(3));
         Bson customer = match(eq("customer", "sigit"));
         Bson plantname = match(eq(plant, plantName));;
@@ -123,6 +120,11 @@ public class mongoAdminClass {
         for ( Document doc: listTech) {
             techSignalArray.add(((String)doc.get("openplatid")));
         }
+
+        //Create a method to store the OpenPlateID and Description of all signals into the data base
+        // Ceate some global variables to access the DB only once if you can.
+        // make a view of in the data base and link Oplanplat ids to show the descriptions 
+
         return techSignalArray;
     }
 
