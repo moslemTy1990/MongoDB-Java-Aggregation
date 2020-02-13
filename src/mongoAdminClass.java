@@ -19,11 +19,10 @@ public class mongoAdminClass {
     private static List<String> dbcAdmin = new ArrayList<>();
     private static MongoClientURI myAdminMongoUri;
     private static MongoClient mongoAdmin;
+    static mariaDB MariaDB = new mariaDB();
 
     public static void main(String[] args) throws IOException {
-      //  getCollectionasset();  //returns list
-      //  gettechsiganls();       //returns list
-
+        getPladIdandDescription();
     }
 
     public static List<String> gettechsiganls() throws IOException {
@@ -159,6 +158,46 @@ public class mongoAdminClass {
 */
        return kuraIdPlatIdHashMap;
     }
+
+
+    public static void  getPladIdandDescription() throws IOException {
+           mongoAdminProp = new PropertiesClass();
+           mongoAdminProp.setProperies();
+          myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
+          mongoAdmin = new MongoClient(myAdminMongoUri);
+
+         CheckMongoAdminConnection();    // Checking if the connection works or not
+         getAdminCollection();   // Printing the Collection Names
+
+       String category = mongoAdminProp.getCategory();
+        String technological = mongoAdminProp.getTechnological();
+
+        MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(0));
+        Bson filterPlant = eq(category, technological);
+        List<Document> listTech = new ArrayList<>();
+
+        coll.find(filterPlant)
+                .iterator()
+                .forEachRemaining(listTech::add);
+
+
+        listTech.forEach(f ->
+                saveOpenPalandDescToMariaDB(
+                        f.get("openplatid").toString() ,
+                        f.get("description").toString()
+                ));
+    }
+
+    private static void saveOpenPalandDescToMariaDB(String openplatid, String description) {
+
+        try{
+            MariaDB.InsertOpenPalandDescToMariaDB(openplatid,description);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+
 
 }
 

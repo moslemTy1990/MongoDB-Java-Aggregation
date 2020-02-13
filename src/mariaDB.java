@@ -44,6 +44,23 @@ private static PropertiesClass mariadbProp = new PropertiesClass();
         }
     }
 
+    public void InsertOpenPalandDescToMariaDB( String openplatid, String description) throws Exception  {
+
+        String myQuery = mariadbProp.getInsert_Into_OpenPlatIDandDesc() +
+                "VALUES ('"
+                + openplatid + "','"
+                + description +  "'" +
+
+                ")";
+
+        try {
+            PreparedStatement doInsert = conn.prepareStatement(myQuery);
+            doInsert.executeUpdate();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+    }
+
     /*
      *In this function i split the date and time in seprate field.
      */

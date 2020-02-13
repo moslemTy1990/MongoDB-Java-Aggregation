@@ -7,10 +7,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
@@ -26,6 +23,7 @@ public  class mongoClientClass {
     private List<Long> timeBucketList = new ArrayList<>();
     mariaDB MariaDB = new mariaDB();
     mongoAdminClass adminclass;
+   private HashMap<String,String> platIdHashMa;
 
     // checking the mongoConnection
     public void CheckConnection() {
@@ -58,67 +56,88 @@ public  class mongoClientClass {
         long startTime = Long.parseLong(mongoClientProp.getStartTime_val());    //selecting a period
         long finishTime = Long.parseLong(mongoClientProp.getFinishTime_val());
 
-        createBucketTimePeriod(startTime, finishTime);  //fill up the time period bucket
 
-        Bson startTimeBucket = match(gte(lastTimeStamp, startTime));
-        Bson endTimeBucket = match(lte(lastTimeStamp, finishTime));
-        Bson unwindBucket = unwind(unwindSignal);
 
-        for (int j = 0; j < dbc.size(); j++){
-            List<Document> IdBuckets = adminclass.getCollectionasset(dbc.get(j));
-            MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(j));
-            List<String> signalBuckets = adminclass.gettechsiganls();
+     createBucketTimePeriod(startTime, finishTime);  //fill up the time period bucket
 
-            for (int i = 0; i < IdBuckets.size(); i++) {
-                String idManfc = IdBuckets.get(i).get(id).toString();
-                Bson idFilterBucket = match(eq(id, idManfc));
+     Bson startTimeBucket = match(gte(lastTimeStamp, startTime));
+     Bson endTimeBucket = match(lte(lastTimeStamp, finishTime));
+     Bson unwindBucket = unwind(unwindSignal);
 
-               for (int k = 0; k < signalBuckets.size(); k++) {
-                   String signalName = signalBuckets.get(k);
-                   Bson filterSignalUnBucket = match(eq(signals_signalfield, signalName));
+     for (int j = 0; j < dbc.size(); j++) {
 
-                   Bson Bucket = bucket(groupByTimeStamp, timeBucketList, new BucketOptions()
-                           .defaultBucket(sum)
-                           .output(min(id, id_exp),
-                                   min(signal, signals_signalfield_exp),
-                                   avg(averageVal, Document.parse(toDouble_value)),
-                                   stdDevSamp(standardDevField, Document.parse(toDouble_value)),
-                                   max(maxVal, Document.parse(toDouble_value)),
-                                   min(minVal, Document.parse(toDouble_value))
-                           )
-                   );
+         List<Document> IdBuckets = adminclass.getCollectionasset(dbc.get(j));
+         MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(j));
+         List<String> signalBuckets = adminclass.gettechsiganls();
+         platIdHashMa= adminclass.getHashMapKeyAndValue();
 
-                   List<Document> resultbuckt = coll.aggregate(asList(startTimeBucket,
-                           endTimeBucket,
-                           idFilterBucket,
-                           unwindBucket,
-                           filterSignalUnBucket,
-                           Bucket
 
-                   )).into(new ArrayList<Document>());
-                   for (Document Document : resultbuckt) {
-                       System.out.println(Document);
-                   }
+         for (int i = 0; i < IdBuckets.size(); i++) {
+             String idManfc = IdBuckets.get(i).get(id).toString();
+             Bson idFilterBucket = match(eq(id, idManfc));
 
-                   resultbuckt.forEach(f -> saveToMariaDB(
-                           ConvertTimeStamp((long) f.get(timeID)),
-                           f.get(id).toString(),
-                           getOpenPlatIdSignal(f.get(signal).toString()),
-                           (Double) f.get(minVal),
-                           (Double) f.get(maxVal),
-                           (Double) f.get(averageVal),
-                           (Double) f.get(standardDevField)
-                   ));
-               }
-            }
-        }
+             for (int k = 0; k < signalBuckets.size(); k++) {
+                 String signalName = signalBuckets.get(k);
+                 Bson filterSignalUnBucket = match(eq(signals_signalfield, signalName));
+
+                 Bson Bucket = bucket(groupByTimeStamp, timeBucketList, new BucketOptions()
+                         .defaultBucket(sum)
+                         .output(min(id, id_exp),
+                                 min(signal, signals_signalfield_exp),
+                                 avg(averageVal, Document.parse(toDouble_value)),
+                                 stdDevSamp(standardDevField, Document.parse(toDouble_value)),
+                                 max(maxVal, Document.parse(toDouble_value)),
+                                 min(minVal, Document.parse(toDouble_value))
+                         )
+                 );
+
+                 List<Document> resultbuckt = coll.aggregate(asList(startTimeBucket,
+                         endTimeBucket,
+                         idFilterBucket,
+                         unwindBucket,
+                         filterSignalUnBucket,
+                         Bucket
+
+                 )).into(new ArrayList<Document>());
+                 for (Document Document : resultbuckt) {
+                     System.out.println(Document);
+                 }
+
+                 resultbuckt.forEach(f -> {
+                     try {
+                         saveToMariaDB(
+                                 ConvertTimeStamp((long) f.get(timeID)),
+                                 f.get(id).toString(),
+                                 getOpenPlatIdSignal(f.get(signal).toString()),
+                                 (Double) f.get(minVal),
+                                 (Double) f.get(maxVal),
+                                 (Double) f.get(averageVal),
+                                 (Double) f.get(standardDevField)
+                         );
+                     } catch (IOException e) {
+                         System.out.println(e.toString());
+                     }
+                 });
+             }
+         }
+     }
     }
 
-    private  String getOpenPlatIdSignal(String sig){
+    private  String getOpenPlatIdSignal(String sig) throws IOException {
 
+        try {
 
-// here define the hashmap. and search if the signal is in the kuraID of hashmap return the openplatid
-
+            for (Object obj : platIdHashMa.entrySet()) {
+                Map.Entry<String, String> entry = (Map.Entry) obj;
+               String key = entry.getKey();
+                    if (sig.equals(key)) {
+                    sig = entry.getValue();
+                    break;
+                }
+            }
+        }catch (Exception e){
+            System.out.println("Error : " + e.toString());
+        }
         return sig;
     }
     /*

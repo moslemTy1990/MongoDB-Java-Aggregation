@@ -34,6 +34,7 @@ public class PropertiesClass {
     private static String maxVal;
     private static String minVal;
     private static String insert_Into_mongodb_data;
+    private  static String insert_Into_OpenPlatIDandDesc;
     private static String timeID;
     private static String manufacturer_field;
     private static String gmb_val;
@@ -44,6 +45,7 @@ public class PropertiesClass {
         manufacturer_field= prop.getProperty("manufacturer_field");
         gmb_val=prop.getProperty("gmb_val");
         insert_Into_mongodb_data = prop.getProperty("insert_Into_mongodb_data");
+        insert_Into_OpenPlatIDandDesc = prop.getProperty("insert_Into_OpenPlatIDandDesc");
         mariaClassDriver =  prop.getProperty("mariaClassDriver");
         mariaDBUrl =  prop.getProperty("mariaDBUrl");
         strDateFormat =  prop.getProperty("strDateFormat");
@@ -92,6 +94,10 @@ public class PropertiesClass {
             fis.close();
         }
         return prop;
+    }
+
+    public static String getInsert_Into_OpenPlatIDandDesc() {
+        return insert_Into_OpenPlatIDandDesc;
     }
 
     public String getTechnological() {
