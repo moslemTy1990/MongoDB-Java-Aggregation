@@ -7,9 +7,9 @@ public class mainClass {
         PropertiesClass prop = new PropertiesClass();
         prop.setProperies();
         //---------------------------
-        mongoClientClass Myconnection = new mongoClientClass(); //Instanciating the class of main methods
-        Myconnection.CheckConnection();    // Checking if the connection works or not
-       Myconnection.getCollection();   // Printing the Collection Names
-       Myconnection.FilterTemp();  //Printing and showing an example in Filters
+       mongoClientClass Client = new mongoClientClass(); //Instanciating the class of main methods
+       Client.CheckConnection();    // Checking if the connection works or not
+       Client.getCollection();   // Printing the Collection Names
+       Client.FilterTemp();  //Printing and showing an example in Filters
     }
 }

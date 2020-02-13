@@ -47,9 +47,9 @@ private static PropertiesClass mariadbProp = new PropertiesClass();
     public void InsertOpenPalandDescToMariaDB( String openplatid, String description) throws Exception  {
 
         String myQuery = mariadbProp.getInsert_Into_OpenPlatIDandDesc() +
-                "VALUES ('"
-                + openplatid + "','"
-                + description +  "'" +
+                "VALUES (\""
+                + openplatid + "\",\""
+                + description +  "\"" +
 
                 ")";
 

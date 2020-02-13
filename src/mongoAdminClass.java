@@ -19,11 +19,8 @@ public class mongoAdminClass {
     private static List<String> dbcAdmin = new ArrayList<>();
     private static MongoClientURI myAdminMongoUri;
     private static MongoClient mongoAdmin;
-    static mariaDB MariaDB = new mariaDB();
+    mariaDB MariaDB = new mariaDB();
 
-    public static void main(String[] args) throws IOException {
-        getPladIdandDescription();
-    }
 
     public static List<String> gettechsiganls() throws IOException {
         List<String> techSignals = new ArrayList() ;
@@ -31,7 +28,6 @@ public class mongoAdminClass {
         HashMap<String,String> hashMappedSignals = new HashMap<String,String>();
         techSignals =getTechSignals();
         hashMappedSignals=getHashMapKeyAndValue();
-     //   System.out.println(hashMappedSignals.size());
         try {
 
             for (Object obj : hashMappedSignals.entrySet()) {
@@ -39,10 +35,8 @@ public class mongoAdminClass {
                 String key = entry.getKey();
                 if (techSignals.contains(entry.getValue())==true) {
                     kuraIdTechignals.add(key);
-                    // while (hashMappedSignals.keySet().remove(key));
                 }
             }
-         //   System.out.println(kuraIdTechignals.size());
         }catch (Exception e){
             System.out.println("Error : " + e.toString());
         }
@@ -50,26 +44,19 @@ public class mongoAdminClass {
     }
 
     public static List<Document> getCollectionasset(String plantName) throws IOException {
-        mongoAdminProp = new PropertiesClass();
-        mongoAdminProp.setProperies();
-        myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
-        mongoAdmin = new MongoClient(myAdminMongoUri);
-        String plant = mongoAdminProp.getFilterField_plant();
 
-        CheckMongoAdminConnection();    // Checking if the connection works or not
-        getAdminCollection();   // Printing the Collection Names
+        String plant = mongoAdminProp.getFilterField_plant();
+        String customerField=mongoAdminProp.getCustomer() ;
+        String sigit = mongoAdminProp.getSigit();
 
         MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(3));
-        Bson customer = match(eq("customer", "sigit"));
+        Bson customer = match(eq(customerField, sigit));
         Bson plantname = match(eq(plant, plantName));;
         List<Document>  assetIDs = coll.aggregate(
                                                     asList( customer
                                                             ,plantname
                                                     )).into(new ArrayList<Document>());
-        for (Document Document : assetIDs) {
-            System.out.println(Document);
-        }
-        return assetIDs;
+     return assetIDs;
     }
 
     public static void CheckMongoAdminConnection() {
@@ -96,16 +83,10 @@ public class mongoAdminClass {
     }
 
     public static List<String> getTechSignals() throws IOException {
-     //   mongoAdminProp = new PropertiesClass();
-     //   mongoAdminProp.setProperies();
-      //  myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
-      //  mongoAdmin = new MongoClient(myAdminMongoUri);
-
-       // CheckMongoAdminConnection();    // Checking if the connection works or not
-       // getAdminCollection();   // Printing the Collection Names
 
         String category = mongoAdminProp.getCategory();
         String technological = mongoAdminProp.getTechnological();
+        String openplatid = mongoAdminProp.getOpenplatid();
 
         MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(0));
         Bson filterPlant = eq(category, technological);
@@ -117,23 +98,23 @@ public class mongoAdminClass {
                 .forEachRemaining(listTech::add);
 
         for ( Document doc: listTech) {
-            techSignalArray.add(((String)doc.get("openplatid")));
+            techSignalArray.add(((String)doc.get(openplatid)));
         }
-
-        //Create a method to store the OpenPlateID and Description of all signals into the data base
-        // Ceate some global variables to access the DB only once if you can.
-        // make a view of in the data base and link Oplanplat ids to show the descriptions 
 
         return techSignalArray;
     }
 
     public static HashMap<String,String> getHashMapKeyAndValue() throws IOException {
 
+        String signals = mongoAdminProp.getSignals();
+        String array = mongoAdminProp.getArray();
+        String openplatID = mongoAdminProp.getOpenplatid();
+        String kuraID = mongoAdminProp.getKuraid();
+
         HashMap<String,String> kuraIdPlatIdHashMap = new HashMap<String,String>();
 
         MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(4));
-        Bson filterType = type("signals", "array");
-       // Bson filterXpr = expr(Document.parse("{ $gt: [ { $size: '$signals' }, 0 ] }"));
+        Bson filterType = type(signals, array);
         List<Document> listHash = new ArrayList<>();
 
         coll.find(and(filterType))
@@ -142,62 +123,50 @@ public class mongoAdminClass {
 
         for ( Document doc: listHash) {
             List<Document> arr = (List<Document>) doc.get("signals");
-            arr.forEach(e ->  kuraIdPlatIdHashMap.put((String)e.get("kuraid"),(String)e.get("openplatid")) );
+            arr.forEach(e ->  kuraIdPlatIdHashMap.put((String)e.get(kuraID),(String)e.get(openplatID)) );
         }
-      //  System.out.println(kuraIdPlatIdHashMap.size());
 
         while(kuraIdPlatIdHashMap.keySet().remove(null));
         while(kuraIdPlatIdHashMap.values().remove(null));
 
-      //  System.out.println(kuraIdPlatIdHashMap.containsValue("@InterfaceType.Jobs.ActiveJob.MouldDescription"));
-       /* for (Object obj : kuraIdPlatIdHashMap.entrySet()) {
-            Map.Entry<String, String> entry = (Map.Entry) obj;
-            System.out.print("Key: " + entry.getKey());
-            System.out.println(", Value: " + entry.getValue());
-        }
-*/
        return kuraIdPlatIdHashMap;
     }
 
-
-    public static void  getPladIdandDescription() throws IOException {
+    public  void  getPladIdandDescription() throws IOException {
            mongoAdminProp = new PropertiesClass();
            mongoAdminProp.setProperies();
-          myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
-          mongoAdmin = new MongoClient(myAdminMongoUri);
+           myAdminMongoUri = new MongoClientURI(mongoAdminProp.getAdminMongoUri());
+           mongoAdmin = new MongoClient(myAdminMongoUri);
+           List<Document> listTech = new ArrayList<>();
 
-         CheckMongoAdminConnection();    // Checking if the connection works or not
-         getAdminCollection();   // Printing the Collection Names
+           CheckMongoAdminConnection();    // Checking if the connection works or not
+           getAdminCollection();   // Printing the Collection Names
 
-       String category = mongoAdminProp.getCategory();
-        String technological = mongoAdminProp.getTechnological();
+           String category = mongoAdminProp.getCategory();
+           String technological = mongoAdminProp.getTechnological();
+           String openplatid = mongoAdminProp.getOpenplatid() ;
+           String description =mongoAdminProp.getDescription();
 
-        MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(0));
-        Bson filterPlant = eq(category, technological);
-        List<Document> listTech = new ArrayList<>();
+           MongoCollection<Document> coll = mongoAdmin.getDatabase(dbsAdmin.get(0)).getCollection(dbcAdmin.get(0));
+           Bson filterPlant = eq(category, technological);
 
-        coll.find(filterPlant)
+           coll.find(filterPlant)
                 .iterator()
                 .forEachRemaining(listTech::add);
 
-
-        listTech.forEach(f ->
+           listTech.forEach(f ->
                 saveOpenPalandDescToMariaDB(
-                        f.get("openplatid").toString() ,
-                        f.get("description").toString()
+                        f.get(openplatid).toString() ,
+                        f.get(description).toString()
                 ));
     }
 
-    private static void saveOpenPalandDescToMariaDB(String openplatid, String description) {
-
+    private  void saveOpenPalandDescToMariaDB(String openplatid, String description) {
         try{
             MariaDB.InsertOpenPalandDescToMariaDB(openplatid,description);
         }catch(Exception e){
             System.out.println(e);
         }
     }
-
-
-
 }
 

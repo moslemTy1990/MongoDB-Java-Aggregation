@@ -22,8 +22,8 @@ public  class mongoClientClass {
     private List<String> dbc = new ArrayList<>();
     private List<Long> timeBucketList = new ArrayList<>();
     mariaDB MariaDB = new mariaDB();
-    mongoAdminClass adminclass;
-   private HashMap<String,String> platIdHashMa;
+    mongoAdminClass adminclass = new mongoAdminClass();
+    private HashMap<String,String> platIdHashMa;
 
     // checking the mongoConnection
     public void CheckConnection() {
@@ -56,9 +56,11 @@ public  class mongoClientClass {
         long startTime = Long.parseLong(mongoClientProp.getStartTime_val());    //selecting a period
         long finishTime = Long.parseLong(mongoClientProp.getFinishTime_val());
 
+        adminclass.getPladIdandDescription();
+        List<String> signalBuckets = adminclass.gettechsiganls();
+        platIdHashMa= adminclass.getHashMapKeyAndValue();
 
-
-     createBucketTimePeriod(startTime, finishTime);  //fill up the time period bucket
+        createBucketTimePeriod(startTime, finishTime);  //fill up the time period bucket
 
      Bson startTimeBucket = match(gte(lastTimeStamp, startTime));
      Bson endTimeBucket = match(lte(lastTimeStamp, finishTime));
@@ -68,9 +70,6 @@ public  class mongoClientClass {
 
          List<Document> IdBuckets = adminclass.getCollectionasset(dbc.get(j));
          MongoCollection<Document> coll = mongoClient.getDatabase(dbs.get(0)).getCollection(dbc.get(j));
-         List<String> signalBuckets = adminclass.gettechsiganls();
-         platIdHashMa= adminclass.getHashMapKeyAndValue();
-
 
          for (int i = 0; i < IdBuckets.size(); i++) {
              String idManfc = IdBuckets.get(i).get(id).toString();

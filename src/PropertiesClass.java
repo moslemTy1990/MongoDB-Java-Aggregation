@@ -12,13 +12,10 @@ public class PropertiesClass {
     private static String dateType_day;
     private static String dateType_hour;
     private static String adminMongoUri;
-    private static String filterPlant_val_cambiano;
     private static String filterField_plant;
     private static String clientMongoUri_sigit;
     private static String startTime_val;
     private static String finishTime_val;
-    private static String Signal_val;
-    private static String id_val;
     private static String timeStampField_lst;
     private static String filterField_id;
     private static String signalArray_exp;
@@ -36,14 +33,17 @@ public class PropertiesClass {
     private static String insert_Into_mongodb_data;
     private  static String insert_Into_OpenPlatIDandDesc;
     private static String timeID;
-    private static String manufacturer_field;
-    private static String gmb_val;
     private static String technological;
     private static String category;
+    private static String openplatid;
+    private static String description;
+    private static String kuraid;
+    private static String array;
+    private static String signals;
+    private static String customer;
+    private static String sigit;
     public static void setProperies() throws IOException {
         Properties prop = readPropertiesFile("config.properties");
-        manufacturer_field= prop.getProperty("manufacturer_field");
-        gmb_val=prop.getProperty("gmb_val");
         insert_Into_mongodb_data = prop.getProperty("insert_Into_mongodb_data");
         insert_Into_OpenPlatIDandDesc = prop.getProperty("insert_Into_OpenPlatIDandDesc");
         mariaClassDriver =  prop.getProperty("mariaClassDriver");
@@ -54,13 +54,10 @@ public class PropertiesClass {
         dateType_day =  prop.getProperty("dateType_day");
         dateType_hour =  prop.getProperty("dateType_hour");
         adminMongoUri =  prop.getProperty("adminMongoUri");
-        filterPlant_val_cambiano =  prop.getProperty("filterPlant_val_cambiano");
         filterField_plant =  prop.getProperty("filterField_plant");
         clientMongoUri_sigit =  prop.getProperty("clientMongoUri_sigit");
         startTime_val =  prop.getProperty("startTime_val");
         finishTime_val =  prop.getProperty("finishTime_val");
-        Signal_val =  prop.getProperty("Signal_val");
-        id_val =  prop.getProperty("id_val");
         timeStampField_lst =  prop.getProperty("timeStampField_lst");
         filterField_id =  prop.getProperty("filterField_id");
         signalArray_exp =  prop.getProperty("signalArray_exp");
@@ -78,6 +75,14 @@ public class PropertiesClass {
         timeID = prop.getProperty("timeID");
         category = prop.getProperty("category");
         technological = prop.getProperty("technological");
+        openplatid =prop.getProperty("openplatid");
+        description=prop.getProperty("description");
+        array=prop.getProperty("array");
+        signals=prop.getProperty("signals");
+        kuraid =prop.getProperty("kuraid");
+        customer=prop.getProperty("customer");
+        sigit =prop.getProperty("sigit");
+
     }
     public static Properties readPropertiesFile(String fileName) throws IOException {
         FileInputStream fis = null;
@@ -96,26 +101,36 @@ public class PropertiesClass {
         return prop;
     }
 
-    public static String getInsert_Into_OpenPlatIDandDesc() {
+    public  String getCustomer() {
+        return customer;
+    }
+    public  String getSigit() {
+        return sigit;
+    }
+    public  String getKuraid() {
+        return kuraid;
+    }
+    public  String getArray() {
+        return array;
+    }
+    public  String getSignals() {
+        return signals;
+    }
+    public  String getInsert_Into_OpenPlatIDandDesc() {
         return insert_Into_OpenPlatIDandDesc;
     }
-
+    public  String getOpenplatid() {
+        return openplatid;
+    }
+    public  String getDescription() {
+        return description;
+    }
     public String getTechnological() {
         return technological;
     }
-
     public String getCategory() {
         return category;
     }
-
-    public String getManufacturer_field() {
-        return manufacturer_field;
-    }
-
-    public String getGmb_val() {
-        return gmb_val;
-    }
-
     public String getTimeID() {
         return timeID;
     }
@@ -146,9 +161,6 @@ public class PropertiesClass {
     public String getAdminMongoUri() {
         return adminMongoUri;
     }
-    public String getFilterPlant_val_cambiano() {
-        return filterPlant_val_cambiano;
-    }
     public String getFilterField_plant() {
         return filterField_plant;
     }
@@ -160,12 +172,6 @@ public class PropertiesClass {
     }
     public String getFinishTime_val() {
         return finishTime_val;
-    }
-    public String getSignal_val() {
-        return Signal_val;
-    }
-    public String getId_val() {
-        return id_val;
     }
     public String getTimeStampField_lst() {
         return timeStampField_lst;
